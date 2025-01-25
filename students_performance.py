@@ -69,9 +69,9 @@ class ImgHandler():
     def plot_gender_histogram(self) -> None:
         gender_col = self.__df__.columns[Column.Gender.value]
         hist_data = self.__df__[gender_col]
-        label_name = ('Gender (0 = Male, 1 = Female)',
+        label_name = ('Gender',
                       'Number of Students')
-        title = 'Gender'
+        title = 'Number of Student in Each Gender'
         img_name = 'gender_histogram'
         plt.xticks([0, 1], ['Male', 'Female'])
         self.__plot_histogram__(hist_data, label_name, title, img_name, x_range=(-0.5, 1.5))
@@ -119,13 +119,13 @@ class ImgHandler():
         
     def plot_parent_support_vs_gpa_heat(self) -> None:
         support_col = self.__df__.columns[Column.ParentalSupport.value]
-        gpa_class_col = self.__df__.columns[Column.GPA.value]
+        grade_class_col = self.__df__.columns[Column.GradeClass.value]
+        pd.set_option('display.max_rows', None)
+        heatmap_data = pd.crosstab(self.__df__[grade_class_col], self.__df__[support_col])
 
-        heatmap_data = pd.crosstab(self.__df__[gpa_class_col], self.__df__[support_col])
-
-        label_name = ['GPA_Class', 'Parential_Support']
-        title_name = "GPA Class vs Parential Support"
-        img_name = "GPA_vs_Parential_Support"
+        label_name = ['Grade_Class', 'Parental_Support']
+        title_name = "Grade Class vs Parental Support"
+        img_name = "Grade_vs_Parental_Support"
         # plt.xticks([0, 1, 2, 3, 4], ['A', 'B', 'C', 'D', 'E'])
         # plt.yticks([0, 1, 2, 3, 4], ['None', 'Low', 'Moderate', 'High', 'Very High'])
         xticks = ['A', 'B', 'C', 'D', 'E']
@@ -214,12 +214,12 @@ class DataHandler():
 
     def __get_features__(self) -> pd.DataFrame:
         ignore_col = [self.__df__.columns[Column.StudentID.value],
-                    #   self.__df__.columns[Column.Age.value],
-                    #   self.__df__.columns[Column.Gender.value],
-                    #   self.__df__.columns[Column.Ethnicity.value],
-                    #   self.__df__.columns[Column.Sports.value],
-                    #   self.__df__.columns[Column.Music.value],
-                    #   self.__df__.columns[Column.Volunteering.value],
+                      self.__df__.columns[Column.Age.value],
+                      self.__df__.columns[Column.Gender.value],
+                      self.__df__.columns[Column.Ethnicity.value],
+                      self.__df__.columns[Column.Sports.value],
+                      self.__df__.columns[Column.Music.value],
+                      self.__df__.columns[Column.Volunteering.value],
                       self.__df__.columns[Column.GPA.value],
                       self.__df__.columns[Column.GradeClass.value]]
         return self.__df__.drop(columns=ignore_col)
@@ -228,11 +228,13 @@ class DataHandler():
         gpa_class_col = self.__df__.columns[Column.GPA.value]
         return self.__df__[gpa_class_col]
 
-    def __plot_predict_vs_observe__(self, pred, obs) -> None:
+    def __plot_predict_vs_observe__(self, pred, obs, r2) -> None:
         label_name = ["Predicted GPA", "Observed GPA"]
         title_name = "Predicted GPA vs Observed GPA"
         img_name = "Predicted_vs_Observed"
+        r2_str = f"R^2 = {r2:.2f}"
         __img_handler = ImgHandler(None)
+        plt.text(0.2, 3.5, r2_str, fontsize=12, color='black')
         __img_handler.plot_scatter((pred, obs), label_name, title_name, img_name)
 
     def fit_linear_regression(self) -> None:
@@ -245,7 +247,7 @@ class DataHandler():
         r2 = r2_score(y_test, y_pred)
         print(f"R2 Score: {r2:.2f}")
 
-        self.__plot_predict_vs_observe__(y_pred, y_test)
+        self.__plot_predict_vs_observe__(y_pred, y_test, r2)
 
     # ====================  ====================
 
@@ -315,5 +317,5 @@ if __name__ == "__main__":
     data_handler = DataHandler()
     # data_handler.check_gpa_grade()
     # data_handler.plot_img()
-    # data_handler.fit_linear_regression()
-    data_handler.fit_model_iterative()
+    data_handler.fit_linear_regression()
+    # data_handler.fit_model_iterative()
