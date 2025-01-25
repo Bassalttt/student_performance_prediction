@@ -224,11 +224,11 @@ class DataHandler():
                       self.__df__.columns[Column.GradeClass.value]]
         return self.__df__.drop(columns=ignore_col)
 
-    def __get_response_var(self) -> pd.DataFrame:
+    def __get_response_var__(self) -> pd.DataFrame:
         gpa_class_col = self.__df__.columns[Column.GPA.value]
         return self.__df__[gpa_class_col]
 
-    def __plot_predict_vs_observe(self, pred, obs) -> None:
+    def __plot_predict_vs_observe__(self, pred, obs) -> None:
         label_name = ["Predicted GPA", "Observed GPA"]
         title_name = "Predicted GPA vs Observed GPA"
         img_name = "Predicted_vs_Observed"
@@ -237,7 +237,7 @@ class DataHandler():
 
     def fit_linear_regression(self) -> None:
         x = self.__get_features__()
-        y = self.__get_response_var()
+        y = self.__get_response_var__()
         x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
         linear_regression_model = LinearRegression()
         linear_regression_model.fit(x_train, y_train)
@@ -245,7 +245,7 @@ class DataHandler():
         r2 = r2_score(y_test, y_pred)
         print(f"R2 Score: {r2:.2f}")
 
-        self.__plot_predict_vs_observe(y_pred, y_test)
+        self.__plot_predict_vs_observe__(y_pred, y_test)
 
     # ==================== plot ====================
     def plot_study_time_histogram(self):
