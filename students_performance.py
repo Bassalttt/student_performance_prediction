@@ -47,7 +47,7 @@ class ImgHandler():
         plt.xlabel(label_name[0])
         plt.ylabel(label_name[1])
         plt.title(title_name)
-        plt.savefig(os.path.join(data_path, img_name + '.jpg'))
+        plt.savefig(os.path.join(data_path, 'img/' + img_name + '.jpg'))
 
     # ==================== histogram ====================
 
@@ -210,16 +210,16 @@ class DataHandler():
                     self.__df__ = self.__df__.drop(index=row)
         # print(self.__df__)
 
-    # ==================== plot ====================
+    # ==================== linear regression ====================
 
     def __get_features__(self) -> pd.DataFrame:
         ignore_col = [self.__df__.columns[Column.StudentID.value],
-                      self.__df__.columns[Column.Age.value],
-                      self.__df__.columns[Column.Gender.value],
-                      self.__df__.columns[Column.Ethnicity.value],
-                      self.__df__.columns[Column.Sports.value],
-                      self.__df__.columns[Column.Music.value],
-                      self.__df__.columns[Column.Volunteering.value],
+                    #   self.__df__.columns[Column.Age.value],
+                    #   self.__df__.columns[Column.Gender.value],
+                    #   self.__df__.columns[Column.Ethnicity.value],
+                    #   self.__df__.columns[Column.Sports.value],
+                    #   self.__df__.columns[Column.Music.value],
+                    #   self.__df__.columns[Column.Volunteering.value],
                       self.__df__.columns[Column.GPA.value],
                       self.__df__.columns[Column.GradeClass.value]]
         return self.__df__.drop(columns=ignore_col)
@@ -246,6 +246,39 @@ class DataHandler():
         print(f"R2 Score: {r2:.2f}")
 
         self.__plot_predict_vs_observe__(y_pred, y_test)
+
+    # ====================  ====================
+
+    def __get_features_2__(self) -> pd.DataFrame:
+        ignore_col = [self.__df__.columns[Column.StudentID.value],
+                      self.__df__.columns[Column.GPA.value],
+                      self.__df__.columns[Column.GradeClass.value]]
+        return self.__df__.drop(columns=ignore_col)
+
+    def __plot_complexity_vs_r2__(self, comps: List, r2_scores: List[float]) -> None:
+        label_name = ["Model Complexity (Number of Features)",
+                      "R2 Score"]
+        title_name = "Model Complexity vs. R2 Score"
+        img_name = "Complexity_vs_R2"
+        __img_handler = ImgHandler(None)
+        __img_handler.plot_scatter((comps, r2_scores), label_name, title_name, img_name)
+
+    def fit_model_iterative(self) -> None:
+        x = self.__get_features_2__()
+        y = self.__get_response_var__()
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+        features = x.columns
+        r2_scores = []
+        complexities = []
+        for i in range(1, len(features) + 1):
+            selected_features = features[:i] 
+            model = LinearRegression()
+            model.fit(x_train[selected_features], y_train) 
+            y_pred = model.predict(x_test[selected_features])
+            r2 = r2_score(y_test, y_pred)
+            r2_scores.append(r2)
+            complexities.append(i)
+        self.__plot_complexity_vs_r2__(complexities, r2_scores)
 
     # ==================== plot ====================
     def plot_study_time_histogram(self):
@@ -282,4 +315,5 @@ if __name__ == "__main__":
     data_handler = DataHandler()
     # data_handler.check_gpa_grade()
     # data_handler.plot_img()
-    data_handler.fit_linear_regression()
+    # data_handler.fit_linear_regression()
+    data_handler.fit_model_iterative()
