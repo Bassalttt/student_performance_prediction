@@ -135,14 +135,18 @@ class ImgHandler():
 
     # ==================== box plot ====================
 
-    def __plot_boxplot__(self, data, label_name: Tuple[str], title_name: str, img_name: str) -> None:
-        plt.boxplot(data, tick_labels=label_name[0])
+    def __plot_boxplot__(self, data, label_name: Tuple[str], title_name: str, img_name: str, scatter=False) -> None:
+        plt.boxplot(data, tick_labels=label_name[0], showmeans=True)
+        if scatter:
+            for i, dataset in enumerate(data, start=1): 
+                x = np.random.normal(i, 0.08, size=len(dataset))  # add jitter
+                plt.scatter(x, dataset, alpha=0.1, color="blue", s=15)
         plt.ylabel(label_name[1])
         plt.title(title_name)
         plt.savefig(os.path.join(data_path, 'img/' + img_name + '.jpg'))
         # self.__plot_ending__(label_name, title_name, img_name)
 
-    def plot_study_time_weekly(self) -> None:
+    def plot_study_time_weekly_w_age(self) -> None:
         age_study_time_dict: Dict[int, List[float]] = {}
         for data in self.__df__.itertuples():
             # print(data.StudyTimeWeekly)
@@ -153,11 +157,30 @@ class ImgHandler():
         # print(age_study_time_dict)
         x_label = sorted(age_study_time_dict.keys())
         box_plot_data = [age_study_time_dict[label] for label in x_label]
-        y_label = "study time weekly"
+        y_label = "Study Time Weekly (Hours)"
         label_name = [x_label, y_label]
         title_name = "Study Time Weekly in Different Age"
-        img_name = "study_time_in_different_age"
-        self.__plot_boxplot__(box_plot_data, label_name, title_name, img_name)
+        # img_name = "study_time_in_different_age-normal"
+        img_name = "study_time_in_different_age-scatter"
+        self.__plot_boxplot__(box_plot_data, label_name, title_name, img_name, True)
+
+    def plot_absence_w_grade_class(self) -> None:
+        grade_absence_dict: Dict[int, List[float]] = {}
+        for data in self.__df__.itertuples():
+            # print(data.StudyTimeWeekly)
+            if grade_absence_dict.get(data.GradeClass):
+                grade_absence_dict[data.GradeClass].append(data.Absences)
+            else:
+                grade_absence_dict[data.GradeClass] = [data.Absences]
+        x_label = sorted(grade_absence_dict.keys())
+        box_plot_data = [grade_absence_dict[label] for label in x_label]
+        y_label = "Absences (Times)"
+        label_name = [x_label, y_label]
+        title_name = "Absences and Grade Class"
+        # img_name = "absences_and_grade-normal"
+        # self.__plot_boxplot__(box_plot_data, label_name, title_name, img_name, False)
+        img_name = "absences_and_grade-scatter"
+        self.__plot_boxplot__(box_plot_data, label_name, title_name, img_name, True)
 
 
 class DataHandler():
@@ -324,8 +347,11 @@ class DataHandler():
     def plot_parent_support_vs_gpa_heat(self) -> None:
         self.__img_handler__.plot_parent_support_vs_gpa_heat()
 
-    def plot_study_time_weekly(self) -> None:
-        self.__img_handler__.plot_study_time_weekly()
+    def plot_study_time_weekly_w_age(self) -> None:
+        self.__img_handler__.plot_study_time_weekly_w_age()
+
+    def plot_absence_w_grade_class(self) -> None:
+        self.__img_handler__.plot_absence_w_grade_class()
 
     def plot_img(self) -> None:
         # self.plot_gender_histogram()
@@ -333,7 +359,8 @@ class DataHandler():
         # self.plot_study_time_gpa_scatter()
         # self.plot_parent_education_vs_support_heat()
         # self.plot_parent_support_vs_gpa_heat()
-        self.plot_study_time_weekly()
+        # self.plot_study_time_weekly_w_age()
+        self.plot_absence_w_grade_class()
 
 
 # 1. three well-formatted data visualizations. 
