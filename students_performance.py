@@ -9,9 +9,10 @@ from typing import Dict, Tuple, List
 
 import pandas as pd
 import seaborn as sns
-from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
+from sklearn.preprocessing import StandardScaler
 
 
 data_path = "/Users/elin/Documents/University/CMU/2025_Spring/applied_ML/students_performance/"
@@ -51,8 +52,14 @@ class ImgHandler():
 
     # ==================== histogram ====================
 
-    def __plot_histogram__(self, data, label_name: Tuple[str, str], title_name: str, img_name: str, x_range=Tuple[float]) -> None:
-        plt.hist(data, edgecolor='black', range=x_range)
+    def plot_histogram(self, data, label_name: Tuple[str, str],    title_name: str, img_name: str, x_range:Tuple[float]=None) -> None:
+        self.__plot_histogram__(data, label_name, title_name, img_name, x_range)
+
+    def __plot_histogram__(self, data, label_name: Tuple[str, str], title_name: str, img_name: str, x_range:Tuple[float]=None) -> None:
+        if x_range:
+            plt.hist(data, edgecolor='black', range=x_range)
+        else:
+            plt.hist(data, edgecolor='black')
         self.__plot_ending__(label_name, title_name, img_name)
 
     def plot_study_time_histogram(self) -> None:
@@ -332,6 +339,7 @@ class DataHandler():
         self.__plot_complexity_vs_r2__(complexities, r2_scores)
 
     # ==================== plot ====================
+
     def plot_study_time_histogram(self):
         self.__img_handler__.plot_study_time_histogram()
 
@@ -353,6 +361,20 @@ class DataHandler():
     def plot_absence_w_grade_class(self) -> None:
         self.__img_handler__.plot_absence_w_grade_class()
 
+    def standardize_age(self) -> None:
+        scaler = StandardScaler()
+        age_col = self.__df__.columns[Column.Age.value]
+        # print(self.__df__[age_col])
+        scaled_data = scaler.fit_transform(self.__df__[[age_col]])
+        print(scaled_data[0])
+        label_name = ('Age',
+                      'Number of Students')
+        title = 'Number of Student in Each Age'
+        img_name = 'age_histogram'
+        # plt.xticks([0, 1], ['Male', 'Female'])
+        self.__img_handler__.plot_histogram(scaled_data, label_name, title, img_name)
+
+
     def plot_img(self) -> None:
         # self.plot_gender_histogram()
         # self.plot_study_time_histogram()
@@ -360,7 +382,8 @@ class DataHandler():
         # self.plot_parent_education_vs_support_heat()
         # self.plot_parent_support_vs_gpa_heat()
         # self.plot_study_time_weekly_w_age()
-        self.plot_absence_w_grade_class()
+        # self.plot_absence_w_grade_class()
+        self.standardize_age()
 
 
 # 1. three well-formatted data visualizations. 
