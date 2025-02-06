@@ -11,12 +11,11 @@ import pandas as pd
 import seaborn as sns
 from sklearn.cluster import KMeans
 from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
+from sklearn.neighbors import KNeighborsRegressor
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeRegressor
 
@@ -419,9 +418,11 @@ class Trainer():
         self.__split_data__()
 
     def __split_data__(self) -> None:
-        x_train, x_validate_test, y_train, y_validate_test = train_test_split(self.__data__[0], self.__data__[1], test_size=0.2, random_state=1)
+        x_train, x_validate_test, y_train, y_validate_test = \
+            train_test_split(self.__data__[0], self.__data__[1], test_size=0.2, random_state=1)
 
-        x_validate, x_test, y_validate, y_test = train_test_split(x_validate_test, y_validate_test, test_size=0.5, random_state=1)
+        x_validate, x_test, y_validate, y_test = \
+            train_test_split(x_validate_test, y_validate_test, test_size=0.5, random_state=1)
         self.__train__ = [x_train, y_train]
         self.__validate__ = [x_validate, y_validate]
         self.__test__ = [x_test, y_test] 
