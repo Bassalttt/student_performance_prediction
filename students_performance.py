@@ -5,14 +5,19 @@ from enum import Enum
 from  matplotlib import pyplot as plt
 import numpy as np
 import os
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple, List, Union
 
 import pandas as pd
 import seaborn as sns
+from sklearn.cluster import KMeans
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, mean_squared_error, mean_absolute_error, r2_score
 from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeRegressor
 
 
 data_path = "/Users/elin/Documents/University/CMU/2025_Spring/applied_ML/students_performance/"
@@ -307,6 +312,20 @@ class DataHandler():
 
     # ====================  ====================
 
+    def fit_random_forest(self) -> None:
+        x: pd.DataFrame = self.__get_features__()
+        y: pd.DataFrame = self.__get_response_var__()
+        trainer = Trainer(x, y)
+        trainer.do_random_forest()
+
+    def fit_decision_tree(self) -> None:
+        x: pd.DataFrame = self.__get_features__()
+        y: pd.DataFrame = self.__get_response_var__()
+        trainer = Trainer(x, y)
+        trainer.do_decision_tree()
+
+    # ====================  ====================
+
     def __get_features_2__(self) -> pd.DataFrame:
         ignore_col = [self.__df__.columns[Column.StudentID.value],
                       self.__df__.columns[Column.GPA.value],
@@ -374,7 +393,6 @@ class DataHandler():
         # plt.xticks([0, 1], ['Male', 'Female'])
         self.__img_handler__.plot_histogram(scaled_data, label_name, title, img_name)
 
-
     def plot_img(self) -> None:
         # self.plot_gender_histogram()
         # self.plot_study_time_histogram()
@@ -386,16 +404,58 @@ class DataHandler():
         self.standardize_age()
 
 
-# 1. three well-formatted data visualizations. 
-#       scatter plots, histograms, heatmaps, correlation plots
-# 2. 
+class Trainer():
+    def __init__(self, x: pd.DataFrame, y: pd.DataFrame) -> None:
+        self.__data__: List[pd.DataFrame] = [x, y]
+        self.__train__: List[pd.DataFrame] = None
+        self.__validate__: List[pd.DataFrame] = None
+        self.__test__: List[pd.DataFrame] = None
+        self.__split_data__()
 
+    def __split_data__(self) -> None:
+        x_train, x_validate_test, y_train, y_validate_test = train_test_split(self.__data__[0], self.__data__[1], test_size=0.2, random_state=1)
+
+        x_validate, x_test, y_validate, y_test = train_test_split(x_validate_test, y_validate_test, test_size=0.5, random_state=1)
+        self.__train__ = [x_train, y_train]
+        self.__validate__ = [x_validate, y_validate]
+        self.__test__ = [x_test, y_test] 
+
+    def __check_result__(self, real_y, predict_y, item:str="") -> None:
+        mse = mean_squared_error(real_y, predict_y)
+        mae = mean_absolute_error(real_y, predict_y)
+        r2 = r2_score(real_y, predict_y)
+        print(f"{item} MSE: {mse:.2f}")
+        print(f"{item} MAE: {mae:.2f}")
+        print(f"{item} R² Score: {r2:.2f}")
+
+    def __check_validate_result__(self, y_val_predict) -> None:
+        self.__check_result__(self.__validate__[1], y_val_predict, "Validation")
+
+    def __check_test_result__(self, y_test_predict) -> None:
+        self.__check_result__(self.__test__[1], y_test_predict, "Test")
+
+    def __fit_model__(self, model: Union[DecisionTreeRegressor, RandomForestRegressor, KMeans]) -> None:
+        model.fit(self.__train__[0], self.__train__[1])
+        y_val_predict = model.predict(self.__validate__[0])
+        self.__check_validate_result__(y_val_predict)
+        y_test_predict = model.predict(self.__test__[0])
+        self.__check_test_result__(y_test_predict)
+
+    def do_random_forest(self) -> None:
+        random_forest = RandomForestRegressor(n_estimators=100, random_state=1)
+        self.__fit_model__(random_forest)
+
+    def do_decision_tree(self) -> None:
+        decision_tree = DecisionTreeRegressor()
+        self.__fit_model__(decision_tree)
 
 
 
 if __name__ == "__main__":
     data_handler = DataHandler()
     # data_handler.check_gpa_grade()
-    data_handler.plot_img()
+    # data_handler.plot_img()
     # data_handler.fit_linear_regression()
     # data_handler.fit_model_iterative()
+    # data_handler.fit_random_forest()
+    data_handler.fit_decision_tree()
