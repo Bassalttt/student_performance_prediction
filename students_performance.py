@@ -15,7 +15,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, mean_squared_error, mean_absolute_error, r2_score
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeRegressor
 
@@ -324,6 +325,12 @@ class DataHandler():
         trainer = Trainer(x, y)
         trainer.do_decision_tree()
 
+    def fit_k_nearest_neighbors(self) -> None:
+        x: pd.DataFrame = self.__get_features__()
+        y: pd.DataFrame = self.__get_response_var__()
+        trainer = Trainer(x, y)
+        trainer.do_knn()
+
     # ====================  ====================
 
     def __get_features_2__(self) -> pd.DataFrame:
@@ -403,7 +410,6 @@ class DataHandler():
         # self.plot_absence_w_grade_class()
         self.standardize_age()
 
-
 class Trainer():
     def __init__(self, x: pd.DataFrame, y: pd.DataFrame) -> None:
         self.__data__: List[pd.DataFrame] = [x, y]
@@ -449,6 +455,9 @@ class Trainer():
         decision_tree = DecisionTreeRegressor()
         self.__fit_model__(decision_tree)
 
+    def do_knn(self) -> None:
+        knn = KNeighborsRegressor(n_neighbors=5)
+        self.__fit_model__(knn)
 
 
 if __name__ == "__main__":
@@ -457,5 +466,9 @@ if __name__ == "__main__":
     # data_handler.plot_img()
     # data_handler.fit_linear_regression()
     # data_handler.fit_model_iterative()
-    # data_handler.fit_random_forest()
+    print(f"random_forest:")
+    data_handler.fit_random_forest()
+    print(f"\ndecision_tree:")
     data_handler.fit_decision_tree()
+    print(f"\nknn:")
+    data_handler.fit_k_nearest_neighbors()
