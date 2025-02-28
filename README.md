@@ -41,24 +41,24 @@ The Grade Class and the GPA are interchangeable, as they represent the same info
   
 By inspecting the Grade Class and GPA, it was observed that 169 rows contain contradictory values, where the Grade Class does not align with the corresponding GPA. These rows are removed from the dataset to ensure data consistency. Additionally, since using the grade class as a feature is relevant to using GPA to predict GPA, this column is also excluded from the feature set.
   
-A linear regression is used to identify key features by gradually adding features and checking the R2 score. With the plot below, it is rational to say that the absence is an important feature in predicting GPA. Additionally, parental support also contributes slightly to the GPA.
+A linear regression is used to identify key features by gradually adding features and checking the R2 score. With the plot below, it is rational to say that the absence is an important feature in predicting GPA. Additionally, parental support also contributes slightly to the GPA.  
 ![model complexity vs R2](img/Complexity_vs_R2%20copy.jpg)
   
 ## III. Exploratory data analysis
 The scatter plot below illustrates the relationship between weekly study time and GPA. The distribution of points suggests that there is no strong positive correlation between the two variables. Increased study time does not necessarily guarantee higher academic performance, nor does reduced study time always result in a low GPA.  
-![weekly study time vs. gpa](img/weekly_study_time_vs_gpa.jpg)
+![weekly study time vs. gpa](img/weekly_study_time_vs_gpa.jpg)  
 However, the lower density of points in the top-left and bottom-right corners indicates that studying more may reduce the likelihood of having a very low GPA, while studying less decreases the probability of achieving a high GPA. Given the lack of a strong correlation, it is reasonable to infer that other factors influence academic performance, with study time being just one of them.
   
-The heat map below illustrates the relationship between parental support and GPA. The results indicate that parental support does not directly guarantee academic success. Students with high parental support may still experience academic failure, while those with little to no parental support can still achieve strong academic performance. However, this finding suggests only that parental support alone is not the solely determinant of academic performance. It is possible that parental support interacts with other factors.
+The heat map below illustrates the relationship between parental support and GPA. The results indicate that parental support does not directly guarantee academic success. Students with high parental support may still experience academic failure, while those with little to no parental support can still achieve strong academic performance. However, this finding suggests only that parental support alone is not the solely determinant of academic performance. It is possible that parental support interacts with other factors.  
 ![grade class vs. parental support](img/Grade_vs_Parental_Support.jpg)
   
-The following plot illustrates the number of absences across different grade classes. A Grade class of 0.0 corresponds to an “A”, while 4.0 represents an “F”. The green triangles indicate the mean number of absences for each grade category. The results suggest that students who achieved an “A” had significantly fewer absences compared to those with lower grades. However, having fewer than five absences does not necessarily guarantee better academic performance.
+The following plot illustrates the number of absences across different grade classes. A Grade class of 0.0 corresponds to an “A”, while 4.0 represents an “F”. The green triangles indicate the mean number of absences for each grade category. The results suggest that students who achieved an “A” had significantly fewer absences compared to those with lower grades. However, having fewer than five absences does not necessarily guarantee better academic performance.  
 ![absences and grade class](img/absences_and_grade-normal.jpg)
   
-The following box plot illustrates the weekly study time across different ages. The green triangles indicate the mean study time for each group. Based on the visualization, there is no significant difference in study time across different ages.
+The following box plot illustrates the weekly study time across different ages. The green triangles indicate the mean study time for each group. Based on the visualization, there is no significant difference in study time across different ages.  
 ![study time in different age](img/study_time_in_different_age-normal.jpg)
   
-The plot below illustrates the gender distribution within the dataset, showing that the number of male and female students is nearly equal. This balanced distribution allows for a comparative analysis of academic performance across genders.
+The plot below illustrates the gender distribution within the dataset, showing that the number of male and female students is nearly equal. This balanced distribution allows for a comparative analysis of academic performance across genders.  
 ![number of student in each gender](img/gender_histogram.jpg)
   
 ## IV. Modeling results
